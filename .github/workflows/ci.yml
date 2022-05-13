@@ -1,0 +1,31 @@
+name: Test APK output
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  pull_request_review:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build & test APK
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin' # See 'Supported distributions' for available options
+          java-version: '8'
+      - uses: actions/setup-node@v2
+      - name: Install dependencies
+        run: npm install
+      - name: Build APK
+        run: |
+          cd android
+          ./gradlew assembleDebug assembleRelease
+      - name: Test APK
+        run: ./scripts/check-output-apks.sh
